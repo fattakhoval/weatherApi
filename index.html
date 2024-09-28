@@ -9,28 +9,70 @@
 </head>
 
 <body>
-    <h1>Текущая погода в Уфе</h1>
+    <h1>Выберите город</h1>
+
+    <select id="citySelect" onchange="getWeather(this.value)">
+        <option value="524901">Москва</option>
+        <option value="498817">Санкт-Петербург</option>
+        <option value="551487">Казань</option>
+        <option value="499099">Самара</option>
+        <option value="479561">Уфа</option>
+
+    </select>
+
+    
     <div id="weather">
         <p>Загрузка данных...</p>
     </div>
 
     <script>
-        $(document).ready(function () {
-            // Отправляем запрос на сервер для получения погоды
-            $.ajax({
-                url: 'get_weather.php',
-                type: 'GET',
-                success: function (data) {
-                    var weather = JSON.parse(data);
-                    var html = "<p>Температура: " + weather.main.temp + "°C</p>";
-                    html += "<p>Описание: " + weather.weather[0].description + "</p>";
-                    html += "<p>Влажность: " + weather.main.humidity + "%</p>";
-                    $('#weather').html(html);
-                },
-                error: function () {
-                    $('#weather').html('<p>Ошибка при получении данных</p>');
-                }
+        // $(document).ready(function () {
+        //     // Отправляем запрос на сервер для получения погоды
+        //     $.ajax({
+        //         url: 'get_weather.php',
+        //         type: 'GET',
+        //         success: function (data) {
+        //             var weather = JSON.parse(data);
+        //             var html = "<p>Температура: " + weather.main.temp + "°C</p>";
+        //             html += "<p>Описание: " + weather.weather[0].description + "</p>";
+        //             html += "<p>Влажность: " + weather.main.humidity + "%</p>";
+        //             $('#weather').html(html);
+        //         },
+        //         error: function () {
+        //             $('#weather').html('<p>Ошибка при получении данных</p>');
+        //         }
+        //     });
+        // });
+
+
+        $(document).ready(function() {
+            // Функция для запроса погоды для выбранного города
+            function getWeather(cityId) {
+                $.ajax({
+                    url: 'get_weather.php',
+                    type: 'GET',
+                    data: { city_id: cityId },
+                    success: function(data) {
+                        var weather = JSON.parse(data);
+                        var html = "<p>Температура: " + weather.main.temp + "°C</p>";
+                        html += "<p>Описание: " + weather.weather[0].description + "</p>";
+                        html += "<p>Влажность: " + weather.main.humidity + "%</p>";
+                        $('#weather').html(html);
+                    },
+                    error: function() {
+                        $('#weather').html('<p>Ошибка при получении данных</p>');
+                    }
+                });
+            }
+
+            // При изменении выбранного города
+            $('#citySelect').change(function() {
+                var cityId = $(this).val();
+                getWeather(cityId);
             });
+
+            // Загружаем погоду для города по умолчанию (например, для Москвы)
+            getWeather($('#citySelect').val());
         });
     </script>
 </body>
